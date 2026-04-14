@@ -8,7 +8,7 @@
 PRODUCT_NAME = easy_quote
 
 // The application's bundle identifier
-PRODUCT_BUNDLE_IDENTIFIER = com.jamesguerra.easyQuote
+PRODUCT_BUNDLE_IDENTIFIER = com.jamesguerra.easyquote
 
 // The copyright displayed in application information
 PRODUCT_COPYRIGHT = Copyright © 2026 com.example. All rights reserved.
