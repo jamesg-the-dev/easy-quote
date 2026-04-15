@@ -10,6 +10,7 @@ import 'package:provider/provider.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'services/auth_store.dart';
 import 'services/quote_store.dart';
+import 'services/signup_store.dart';
 import 'screens/home_screen.dart';
 import 'screens/login_screen.dart';
 import 'core/config/env.dart';
@@ -40,6 +41,7 @@ class MyApp extends StatelessWidget {
       providers: [
         ChangeNotifierProvider(create: (_) => AuthStore()),
         ChangeNotifierProvider(create: (_) => QuoteStore()),
+        ChangeNotifierProvider(create: (_) => SignupStore()),
       ],
       child: MaterialApp(
         title: 'Easy Quote',

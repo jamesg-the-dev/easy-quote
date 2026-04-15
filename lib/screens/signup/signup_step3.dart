@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:easy_quote/ui/components/logo.dart';
 import 'package:easy_quote/ui/components/text_button.dart';
 import 'package:easy_quote/ui/components/input_decoration.dart';
+import 'package:provider/provider.dart';
+import 'package:easy_quote/services/signup_store.dart';
 
 class SignupStep3 extends StatefulWidget {
   const SignupStep3({super.key});
@@ -11,10 +13,28 @@ class SignupStep3 extends StatefulWidget {
 }
 
 class _SignupStep3State extends State<SignupStep3> {
-  final _businessNameController = TextEditingController();
-  final _postcodeController = TextEditingController();
+  late TextEditingController _businessNameController;
+  late TextEditingController _postcodeController;
   final _formKey = GlobalKey<FormState>();
   bool _isLoading = false;
+
+  @override
+  void initState() {
+    super.initState();
+    // Initialize controllers with stored data from SignupStore
+    final signupStore = context.read<SignupStore>();
+    _businessNameController =
+        TextEditingController(text: signupStore.businessName);
+    _postcodeController = TextEditingController(text: signupStore.postcode);
+
+    // Listen for text changes and update store
+    _businessNameController.addListener(() {
+      context.read<SignupStore>().businessName = _businessNameController.text;
+    });
+    _postcodeController.addListener(() {
+      context.read<SignupStore>().postcode = _postcodeController.text;
+    });
+  }
 
   @override
   void dispose() {
@@ -27,6 +47,7 @@ class _SignupStep3State extends State<SignupStep3> {
     if (_formKey.currentState!.validate()) {
       setState(() => _isLoading = true);
       try {
+        // Data is already saved to SignupStore via listeners
         if (mounted) {
           Navigator.of(context).pushNamed('/signup/success');
         }

@@ -2,6 +2,8 @@ import 'package:easy_quote/ui/components/logo.dart';
 import 'package:flutter/material.dart';
 import 'package:easy_quote/ui/components/text_button.dart';
 import 'package:easy_quote/ui/components/input_decoration.dart';
+import 'package:provider/provider.dart';
+import 'package:easy_quote/services/signup_store.dart';
 
 class EmailSignupStep1 extends StatefulWidget {
   const EmailSignupStep1({super.key});
@@ -11,11 +13,33 @@ class EmailSignupStep1 extends StatefulWidget {
 }
 
 class _EmailSignupStep1State extends State<EmailSignupStep1> {
-  final _emailController = TextEditingController();
-  final _passwordController = TextEditingController();
-  final _confirmPasswordController = TextEditingController();
+  late TextEditingController _emailController;
+  late TextEditingController _passwordController;
+  late TextEditingController _confirmPasswordController;
   final _formKey = GlobalKey<FormState>();
   bool _isLoading = false;
+
+  @override
+  void initState() {
+    super.initState();
+    // Initialize controllers with stored data from SignupStore
+    final signupStore = context.read<SignupStore>();
+    _emailController = TextEditingController(text: signupStore.email);
+    _passwordController = TextEditingController(text: signupStore.password);
+    _confirmPasswordController =
+        TextEditingController(text: signupStore.confirmPassword);
+
+    // Listen for text changes and update store
+    _emailController.addListener(() {
+      context.read<SignupStore>().email = _emailController.text;
+    });
+    _passwordController.addListener(() {
+      context.read<SignupStore>().password = _passwordController.text;
+    });
+    _confirmPasswordController.addListener(() {
+      context.read<SignupStore>().confirmPassword = _confirmPasswordController.text;
+    });
+  }
 
   @override
   void dispose() {
@@ -38,6 +62,7 @@ class _EmailSignupStep1State extends State<EmailSignupStep1> {
 
       setState(() => _isLoading = true);
       try {
+        // Data is already saved to SignupStore via listeners
         if (mounted) {
           Navigator.of(context).pushNamed('/signup/details');
         }

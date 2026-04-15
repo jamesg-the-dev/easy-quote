@@ -1,17 +1,23 @@
 import 'package:flutter/material.dart';
 import 'package:easy_quote/ui/components/logo.dart';
 import 'package:easy_quote/ui/components/text_button.dart';
+import 'package:provider/provider.dart';
+import 'package:easy_quote/services/signup_store.dart';
 
 class SignupSuccessScreen extends StatelessWidget {
   const SignupSuccessScreen({super.key});
 
   void _handleCreateQuote(BuildContext context) {
     debugPrint('Create first quote');
+    // Clear signup data on success
+    context.read<SignupStore>().clearSignupData();
     Navigator.of(context).pushReplacementNamed('/home');
   }
 
   void _handleImportLater(BuildContext context) {
     debugPrint('Import customers later');
+    // Clear signup data on success
+    context.read<SignupStore>().clearSignupData();
     Navigator.of(context).pushReplacementNamed('/home');
   }
 
