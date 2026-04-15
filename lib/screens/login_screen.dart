@@ -4,6 +4,7 @@ import 'package:easy_quote/services/auth_store.dart';
 import 'package:easy_quote/ui/components/text_button.dart';
 import 'package:easy_quote/ui/components/google_button.dart';
 import 'package:easy_quote/ui/components/apple_button.dart';
+import 'package:easy_quote/ui/components/input_decoration.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -220,32 +221,7 @@ class _LoginScreenState extends State<LoginScreen> {
             }
             return null;
           },
-          decoration: InputDecoration(
-            hintText: 'Email address',
-            hintStyle: const TextStyle(color: Color(0xFFA1A1A6)),
-            filled: true,
-            fillColor: Colors.white,
-            contentPadding: const EdgeInsets.symmetric(
-              horizontal: 16,
-              vertical: 20,
-            ),
-            border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12),
-              borderSide: const BorderSide(color: Color(0xFFD4D4D8)),
-            ),
-            enabledBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12),
-              borderSide: const BorderSide(color: Color(0xFFD4D4D8)),
-            ),
-            focusedBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12),
-              borderSide: const BorderSide(color: Color(0xFFA1A1A6)),
-            ),
-            errorBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12),
-              borderSide: const BorderSide(color: Colors.red),
-            ),
-          ),
+          decoration: AppInputDecoration.standard(hintText: 'Email address'),
           style: const TextStyle(color: Colors.black),
         ),
         const SizedBox(height: 16),
@@ -260,32 +236,7 @@ class _LoginScreenState extends State<LoginScreen> {
             }
             return null;
           },
-          decoration: InputDecoration(
-            hintText: 'Password',
-            hintStyle: const TextStyle(color: Color(0xFFA1A1A6)),
-            filled: true,
-            fillColor: Colors.white,
-            contentPadding: const EdgeInsets.symmetric(
-              horizontal: 16,
-              vertical: 20,
-            ),
-            border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12),
-              borderSide: const BorderSide(color: Color(0xFFD4D4D8)),
-            ),
-            enabledBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12),
-              borderSide: const BorderSide(color: Color(0xFFD4D4D8)),
-            ),
-            focusedBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12),
-              borderSide: const BorderSide(color: Color(0xFFA1A1A6)),
-            ),
-            errorBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12),
-              borderSide: const BorderSide(color: Colors.red),
-            ),
-          ),
+          decoration: AppInputDecoration.standard(hintText: 'Password'),
           style: const TextStyle(color: Colors.black),
         ),
         const SizedBox(height: 12),
