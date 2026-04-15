@@ -129,9 +129,7 @@ class HomeScreen extends StatelessWidget {
                     color: Color(0xFF6B7280),
                     onTap: () async {
                       await context.read<AuthStore>().signOut();
-                      if (context.mounted) {
-                        Navigator.of(context).pushReplacementNamed('/login');
-                      }
+                      // AuthGate will automatically detect auth state change and rebuild
                     },
                   ),
                 ],

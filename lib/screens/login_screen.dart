@@ -30,9 +30,7 @@ class _LoginScreenState extends State<LoginScreen> {
     setState(() => _isLoading = true);
     try {
       await context.read<AuthStore>().signInWithGoogle();
-      if (mounted) {
-        Navigator.of(context).pushReplacementNamed('/home');
-      }
+      // AuthGate will automatically detect auth state change and rebuild
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(
@@ -48,9 +46,7 @@ class _LoginScreenState extends State<LoginScreen> {
     setState(() => _isLoading = true);
     try {
       await context.read<AuthStore>().signInWithApple();
-      if (mounted) {
-        Navigator.of(context).pushReplacementNamed('/home');
-      }
+      // AuthGate will automatically detect auth state change and rebuild
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(
@@ -70,9 +66,7 @@ class _LoginScreenState extends State<LoginScreen> {
           _emailController.text,
           _passwordController.text,
         );
-        if (mounted) {
-          Navigator.of(context).pushReplacementNamed('/home');
-        }
+        // AuthGate will automatically detect auth state change and rebuild
       } catch (e) {
         if (mounted) {
           ScaffoldMessenger.of(

@@ -1,4 +1,3 @@
-import 'package:easy_quote/core/app/app_wrapper.dart';
 import 'package:easy_quote/screens/signup/email_signup_step1.dart';
 import 'package:easy_quote/screens/signup/signup_step2.dart';
 import 'package:easy_quote/screens/signup/signup_step3.dart';
@@ -11,8 +10,6 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import 'services/auth_store.dart';
 import 'services/quote_store.dart';
 import 'services/signup_store.dart';
-import 'screens/home_screen.dart';
-import 'screens/login_screen.dart';
 import 'core/config/env.dart';
 import 'core/auth/auth_gate.dart';
 
@@ -50,13 +47,8 @@ class MyApp extends StatelessWidget {
           useMaterial3: false,
           splashFactory: NoSplash.splashFactory,
         ),
-
-        // 👇 WRAP HERE
-        home: AppWrapper(child: const AuthGate()),
-
+        home: const AuthGate(),
         routes: {
-          '/home': (context) => const HomeScreen(),
-          '/login': (context) => const LoginScreen(),
           '/signup': (context) => const SignupWelcomeScreen(),
           '/signup/email': (context) => const EmailSignupStep1(),
           '/signup/details': (context) => const SignupStep2(),
