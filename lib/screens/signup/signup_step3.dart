@@ -1,0 +1,242 @@
+import 'package:flutter/material.dart';
+import 'package:easy_quote/ui/components/logo.dart';
+import 'package:easy_quote/ui/components/text_button.dart';
+import 'package:easy_quote/ui/components/input_decoration.dart';
+
+class SignupStep3 extends StatefulWidget {
+  const SignupStep3({super.key});
+
+  @override
+  State<SignupStep3> createState() => _SignupStep3State();
+}
+
+class _SignupStep3State extends State<SignupStep3> {
+  final _businessNameController = TextEditingController();
+  final _postcodeController = TextEditingController();
+  final _formKey = GlobalKey<FormState>();
+  bool _isLoading = false;
+
+  @override
+  void dispose() {
+    _businessNameController.dispose();
+    _postcodeController.dispose();
+    super.dispose();
+  }
+
+  Future<void> _handleSubmit() async {
+    if (_formKey.currentState!.validate()) {
+      setState(() => _isLoading = true);
+      try {
+        if (mounted) {
+          Navigator.of(context).pushNamed('/signup/success');
+        }
+      } catch (e) {
+        if (mounted) {
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(SnackBar(content: Text('Error: $e')));
+        }
+      } finally {
+        if (mounted) setState(() => _isLoading = false);
+      }
+    }
+  }
+
+  void _handleBack() {
+    Navigator.of(context).pop();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: const Color(0xFFFAFAFA),
+      body: SafeArea(
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.all(24),
+          child: SizedBox(
+            width: double.infinity,
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(maxWidth: 400),
+              child: Form(
+                key: _formKey,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // Back Button
+                    GestureDetector(
+                      onTap: _handleBack,
+                      child: Padding(
+                        padding: const EdgeInsets.only(bottom: 24),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            const Icon(
+                              Icons.chevron_left,
+                              size: 20,
+                              color: Color(0xFF71717A),
+                            ),
+                            const SizedBox(width: 8),
+                            const Text(
+                              'Back',
+                              style: TextStyle(
+                                color: Color(0xFF71717A),
+                                fontSize: 14,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+
+                    // Logo Section
+                    const Padding(
+                      padding: EdgeInsets.only(bottom: 24),
+                      child: AppLogo(variant: AppLogoVariant.withText),
+                    ),
+
+                    // Progress Indicator (2 of 3)
+                    Padding(
+                      padding: const EdgeInsets.only(bottom: 24),
+                      child: Row(
+                        children: [
+                          Expanded(
+                            child: Container(
+                              height: 6,
+                              decoration: BoxDecoration(
+                                color: Colors.black,
+                                borderRadius: BorderRadius.circular(3),
+                              ),
+                            ),
+                          ),
+                          const SizedBox(width: 8),
+                          Expanded(
+                            child: Container(
+                              height: 6,
+                              decoration: BoxDecoration(
+                                color: Colors.black,
+                                borderRadius: BorderRadius.circular(3),
+                              ),
+                            ),
+                          ),
+                          const SizedBox(width: 8),
+                        ],
+                      ),
+                    ),
+
+                    // Heading
+                    const Text(
+                      'Your business details',
+                      style: TextStyle(
+                        fontSize: 28,
+                        fontWeight: FontWeight.w600,
+                        color: Colors.black,
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    const Text(
+                      'Help us set up your quoting profile',
+                      style: TextStyle(fontSize: 14, color: Color(0xFF71717A)),
+                    ),
+                    const SizedBox(height: 32),
+
+                    // Business Name Field
+                    Padding(
+                      padding: const EdgeInsets.only(bottom: 20),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const Text(
+                            'Business name',
+                            style: TextStyle(
+                              fontSize: 13,
+                              fontWeight: FontWeight.w500,
+                              color: Color(0xFF52525B),
+                            ),
+                          ),
+                          const SizedBox(height: 8),
+                          TextFormField(
+                            controller: _businessNameController,
+                            validator: (value) {
+                              if (value?.isEmpty ?? true) {
+                                return 'Business name is required';
+                              }
+                              return null;
+                            },
+                            decoration: AppInputDecoration.standard(
+                              hintText: 'Smith & Sons Building',
+                            ),
+                            style: const TextStyle(
+                              color: Colors.black,
+                              fontSize: 14,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+
+                    // Postcode Field
+                    Padding(
+                      padding: const EdgeInsets.only(bottom: 32),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          RichText(
+                            text: const TextSpan(
+                              children: [
+                                TextSpan(
+                                  text: 'Postcode ',
+                                  style: TextStyle(
+                                    fontSize: 13,
+                                    fontWeight: FontWeight.w500,
+                                    color: Color(0xFF52525B),
+                                  ),
+                                ),
+                                TextSpan(
+                                  text: '(optional)',
+                                  style: TextStyle(
+                                    fontSize: 13,
+                                    fontWeight: FontWeight.w400,
+                                    color: Color(0xFFA1A1A6),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          const SizedBox(height: 8),
+                          TextFormField(
+                            controller: _postcodeController,
+                            maxLength: 4,
+                            keyboardType: TextInputType.number,
+                            decoration: AppInputDecoration.standard(
+                              hintText: '2000',
+                            ),
+                            style: const TextStyle(
+                              color: Colors.black,
+                              fontSize: 14,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+
+                    // Submit Button
+                    AppButton(
+                      label: 'Finalise',
+                      onTap: _isLoading ? null : _handleSubmit,
+                      disabled: _isLoading,
+                      loading: _isLoading,
+                      variant: ButtonVariant.primary,
+                      size: ButtonSize.lg,
+                      fullWidth: true,
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}

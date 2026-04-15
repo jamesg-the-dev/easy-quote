@@ -1,5 +1,8 @@
 import 'package:easy_quote/core/app/app_wrapper.dart';
 import 'package:easy_quote/screens/signup/email_signup_step1.dart';
+import 'package:easy_quote/screens/signup/signup_step2.dart';
+import 'package:easy_quote/screens/signup/signup_step3.dart';
+import 'package:easy_quote/screens/signup/signup_success_screen.dart';
 import 'package:easy_quote/screens/signup/welcome_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
@@ -54,6 +57,9 @@ class MyApp extends StatelessWidget {
           '/login': (context) => const LoginScreen(),
           '/signup': (context) => const SignupWelcomeScreen(),
           '/signup/email': (context) => const EmailSignupStep1(),
+          '/signup/details': (context) => const SignupStep2(),
+          '/signup/business': (context) => const SignupStep3(),
+          '/signup/success': (context) => const SignupSuccessScreen(),
         },
       ),
     );
