@@ -8,15 +8,11 @@ class SignupSuccessScreen extends StatelessWidget {
   const SignupSuccessScreen({super.key});
 
   void _handleCreateQuote(BuildContext context) {
-    debugPrint('Create first quote');
-    // Clear signup data on success
     context.read<SignupStore>().clearSignupData();
     Navigator.of(context).pushReplacementNamed('/home');
   }
 
   void _handleImportLater(BuildContext context) {
-    debugPrint('Import customers later');
-    // Clear signup data on success
     context.read<SignupStore>().clearSignupData();
     Navigator.of(context).pushReplacementNamed('/home');
   }
@@ -37,25 +33,13 @@ class SignupSuccessScreen extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
                     // Success Icon
-                    Container(
-                      width: 80,
-                      height: 80,
-                      decoration: BoxDecoration(
-                        color: Colors.black,
-                        borderRadius: BorderRadius.circular(40),
-                      ),
-                      child: const Center(
-                        child: Icon(
-                          Icons.check_circle,
-                          size: 48,
-                          color: Colors.white,
-                        ),
+                    Center(
+                      child: Icon(
+                        Icons.check_circle,
+                        size: 70,
+                        color: Colors.green.shade600,
                       ),
                     ),
-                    const SizedBox(height: 24),
-
-                    // Logo Section
-                    const AppLogo(),
                     const SizedBox(height: 24),
 
                     // Heading
@@ -83,83 +67,6 @@ class SignupSuccessScreen extends StatelessWidget {
                       variant: ButtonVariant.primary,
                       size: ButtonSize.lg,
                       fullWidth: true,
-                    ),
-                    const SizedBox(height: 12),
-                    Container(
-                      height: 56,
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(12),
-                        border: Border.all(color: const Color(0xFFD4D4D8)),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.black.withOpacity(0.02),
-                            blurRadius: 2,
-                            offset: const Offset(0, 1),
-                          ),
-                        ],
-                      ),
-                      child: Material(
-                        color: Colors.transparent,
-                        child: InkWell(
-                          onTap: () => _handleImportLater(context),
-                          borderRadius: BorderRadius.circular(12),
-                          hoverColor: const Color(0xFFFAFAFA),
-                          child: const Center(
-                            child: Text(
-                              'Import customers later',
-                              style: TextStyle(
-                                color: Colors.black,
-                                fontSize: 14,
-                                fontWeight: FontWeight.w500,
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
-
-                    // Additional Info Card
-                    Padding(
-                      padding: const EdgeInsets.only(top: 48),
-                      child: Container(
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          border: Border.all(color: const Color(0xFFE4E4E7)),
-                          borderRadius: BorderRadius.circular(12),
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.black.withOpacity(0.02),
-                              blurRadius: 2,
-                              offset: const Offset(0, 1),
-                            ),
-                          ],
-                        ),
-                        padding: const EdgeInsets.all(20),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            const Text(
-                              'What\'s next?',
-                              style: TextStyle(
-                                fontSize: 15,
-                                fontWeight: FontWeight.w500,
-                                color: Colors.black,
-                              ),
-                            ),
-                            const SizedBox(height: 12),
-                            _buildInfoItem(
-                              'Add your first customer and create a quote',
-                            ),
-                            const SizedBox(height: 8),
-                            _buildInfoItem('Customize your quote templates'),
-                            const SizedBox(height: 8),
-                            _buildInfoItem(
-                              'Send quotes directly to clients via email',
-                            ),
-                          ],
-                        ),
-                      ),
                     ),
                   ],
                 ),
