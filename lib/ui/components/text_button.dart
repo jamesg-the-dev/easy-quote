@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../primitives/pressable.dart';
+import 'package:easy_quote/ui/primitives/pressable.dart';
 
 enum ButtonVariant { primary, secondary, danger, ghost, link }
 
@@ -212,7 +212,7 @@ class _SpinnerState extends State<_Spinner>
           decoration: BoxDecoration(
             shape: BoxShape.circle,
             border: Border(
-              top: BorderSide(width: 2, color: widget.color),
+              top: BorderSide(width: 2, color: Colors.transparent),
               right: const BorderSide(width: 2, color: Colors.transparent),
               bottom: const BorderSide(width: 2, color: Colors.transparent),
               left: const BorderSide(width: 2, color: Colors.transparent),

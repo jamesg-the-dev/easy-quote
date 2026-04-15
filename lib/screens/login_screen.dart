@@ -1,0 +1,436 @@
+import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:flutter_svg/flutter_svg.dart';
+import '../services/auth_store.dart';
+import '../ui/components/text_button.dart';
+
+class LoginScreen extends StatefulWidget {
+  const LoginScreen({super.key});
+
+  @override
+  State<LoginScreen> createState() => _LoginScreenState();
+}
+
+class _LoginScreenState extends State<LoginScreen> {
+  final _emailController = TextEditingController();
+  final _passwordController = TextEditingController();
+  final _formKey = GlobalKey<FormState>();
+  bool _isLoading = false;
+
+  @override
+  void dispose() {
+    _emailController.dispose();
+    _passwordController.dispose();
+    super.dispose();
+  }
+
+  Future<void> _handleGoogleSignIn() async {
+    setState(() => _isLoading = true);
+    try {
+      await context.read<AuthStore>().signInWithGoogle();
+      if (mounted) {
+        Navigator.of(context).pushReplacementNamed('/home');
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Sign in failed: $e')),
+        );
+      }
+    } finally {
+      if (mounted) setState(() => _isLoading = false);
+    }
+  }
+
+  Future<void> _handleAppleSignIn() async {
+    setState(() => _isLoading = true);
+    try {
+      await context.read<AuthStore>().signInWithApple();
+      if (mounted) {
+        Navigator.of(context).pushReplacementNamed('/home');
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Sign in failed: $e')),
+        );
+      }
+    } finally {
+      if (mounted) setState(() => _isLoading = false);
+    }
+  }
+
+  Future<void> _handleEmailSignIn() async {
+    if (_formKey.currentState!.validate()) {
+      setState(() => _isLoading = true);
+      try {
+        await context.read<AuthStore>().signInWithEmail(
+              _emailController.text,
+              _passwordController.text,
+            );
+        if (mounted) {
+          Navigator.of(context).pushReplacementNamed('/home');
+        }
+      } catch (e) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Sign in failed: $e')),
+          );
+        }
+      } finally {
+        if (mounted) setState(() => _isLoading = false);
+      }
+    }
+  }
+
+  void _handleForgotPassword() {
+    debugPrint('Forgot password clicked');
+  }
+
+  void _handleSignUp() {
+    debugPrint('Sign up clicked');
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: const Color(0xFFFAFAFA),
+      body: SafeArea(
+        child: Center(
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.all(24),
+            child: SizedBox(
+              width: double.infinity,
+              child: ConstrainedBox(
+                constraints: const BoxConstraints(maxWidth: 400),
+                child: Form(
+                  key: _formKey,
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      // Logo/Brand Section
+                      _buildLogoSection(),
+                      const SizedBox(height: 48),
+
+                      // Social Sign In Buttons
+                      _buildGoogleButton(),
+                      const SizedBox(height: 12),
+                      _buildAppleButton(),
+                      const SizedBox(height: 32),
+
+                      // Divider
+                      _buildDivider(),
+                      const SizedBox(height: 32),
+
+                      // Email Sign In Form
+                      _buildEmailForm(),
+                      const SizedBox(height: 32),
+
+                      // Sign Up Link
+                      _buildSignUpLink(),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildLogoSection() {
+    return Column(
+      children: [
+        // Logo placeholder
+        Container(
+          width: 64,
+          height: 64,
+          decoration: BoxDecoration(
+            color: const Color(0xFFD4D4D8),
+            borderRadius: BorderRadius.circular(16),
+          ),
+          child: Center(
+            child: Container(
+              width: 40,
+              height: 40,
+              decoration: BoxDecoration(
+                color: const Color(0xFFA1A1A6),
+                borderRadius: BorderRadius.circular(8),
+              ),
+            ),
+          ),
+        ),
+        const SizedBox(height: 16),
+        const Text(
+          'Welcome back',
+          style: TextStyle(
+            fontSize: 24,
+            fontWeight: FontWeight.w600,
+            color: Colors.black,
+          ),
+        ),
+        const SizedBox(height: 8),
+        const Text(
+          'Sign in to continue',
+          style: TextStyle(fontSize: 14, color: Color(0xFF525252)),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildGoogleButton() {
+    return Container(
+      height: 56,
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: const Color(0xFFD4D4D8)),
+      ),
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: _isLoading ? null : _handleGoogleSignIn,
+          borderRadius: BorderRadius.circular(12),
+          hoverColor: const Color(0xFFFAFAFA),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              if (_isLoading)
+                const SizedBox(
+                  width: 20,
+                  height: 20,
+                  child: CircularProgressIndicator(strokeWidth: 2),
+                )
+              else
+                _buildGoogleIcon(),
+              const SizedBox(width: 12),
+              const Text(
+                'Continue with Google',
+                style: TextStyle(
+                  color: Colors.black,
+                  fontSize: 14,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildGoogleIcon() {
+    return SvgPicture.asset(
+      'icons/google-icon.svg',
+      width: 20,
+      height: 20,
+    );
+  }
+
+  Widget _buildAppleButton() {
+    return Container(
+      height: 56,
+      decoration: BoxDecoration(
+        color: Colors.black,
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: _isLoading ? null : _handleAppleSignIn,
+          borderRadius: BorderRadius.circular(12),
+          hoverColor: const Color(0xFF171717),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              if (_isLoading)
+                const SizedBox(
+                  width: 20,
+                  height: 20,
+                  child: CircularProgressIndicator(
+                    strokeWidth: 2,
+                    valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                  ),
+                )
+              else
+                const Icon(Icons.apple, color: Colors.white, size: 20),
+              const SizedBox(width: 12),
+              const Text(
+                'Continue with Apple',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 14,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildDivider() {
+    return Stack(
+      alignment: Alignment.center,
+      children: [
+        Container(height: 1, color: const Color(0xFFD4D4D8)),
+        Container(
+          padding: const EdgeInsets.symmetric(horizontal: 16),
+          color: const Color(0xFFFAFAFA),
+          child: const Text(
+            'or',
+            style: TextStyle(color: Color(0xFF71717A), fontSize: 12),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildEmailForm() {
+    return Column(
+      children: [
+        // Email Input
+        TextFormField(
+          controller: _emailController,
+          keyboardType: TextInputType.emailAddress,
+          validator: (value) {
+            if (value?.isEmpty ?? true) {
+              return 'Email is required';
+            }
+            if (!value!.contains('@')) {
+              return 'Please enter a valid email';
+            }
+            return null;
+          },
+          decoration: InputDecoration(
+            hintText: 'Email address',
+            hintStyle: const TextStyle(color: Color(0xFFA1A1A6)),
+            filled: true,
+            fillColor: Colors.white,
+            contentPadding: const EdgeInsets.symmetric(
+              horizontal: 16,
+              vertical: 20,
+            ),
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12),
+              borderSide: const BorderSide(color: Color(0xFFD4D4D8)),
+            ),
+            enabledBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12),
+              borderSide: const BorderSide(color: Color(0xFFD4D4D8)),
+            ),
+            focusedBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12),
+              borderSide: const BorderSide(color: Color(0xFFA1A1A6)),
+            ),
+            errorBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12),
+              borderSide: const BorderSide(color: Colors.red),
+            ),
+          ),
+          style: const TextStyle(color: Colors.black),
+        ),
+        const SizedBox(height: 16),
+
+        // Password Input
+        TextFormField(
+          controller: _passwordController,
+          obscureText: true,
+          validator: (value) {
+            if (value?.isEmpty ?? true) {
+              return 'Password is required';
+            }
+            return null;
+          },
+          decoration: InputDecoration(
+            hintText: 'Password',
+            hintStyle: const TextStyle(color: Color(0xFFA1A1A6)),
+            filled: true,
+            fillColor: Colors.white,
+            contentPadding: const EdgeInsets.symmetric(
+              horizontal: 16,
+              vertical: 20,
+            ),
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12),
+              borderSide: const BorderSide(color: Color(0xFFD4D4D8)),
+            ),
+            enabledBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12),
+              borderSide: const BorderSide(color: Color(0xFFD4D4D8)),
+            ),
+            focusedBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12),
+              borderSide: const BorderSide(color: Color(0xFFA1A1A6)),
+            ),
+            errorBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12),
+              borderSide: const BorderSide(color: Colors.red),
+            ),
+          ),
+          style: const TextStyle(color: Colors.black),
+        ),
+        const SizedBox(height: 12),
+
+        // Forgot Password Button
+        Align(
+          alignment: Alignment.centerRight,
+          child: TextButton(
+            onPressed: _handleForgotPassword,
+            style: TextButton.styleFrom(
+              padding: EdgeInsets.zero,
+              tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+            ),
+            child: const Text(
+              'Forgot password?',
+              style: TextStyle(color: Color(0xFF525252), fontSize: 12),
+            ),
+          ),
+        ),
+        const SizedBox(height: 16),
+
+        // Sign In Button (using custom AppButton)
+        AppButton(
+          label: 'Sign in',
+          onTap: _isLoading ? null : _handleEmailSignIn,
+          disabled: _isLoading,
+          loading: _isLoading,
+          variant: ButtonVariant.primary,
+          size: ButtonSize.lg,
+          fullWidth: true,
+        ),
+      ],
+    );
+  }
+
+  Widget _buildSignUpLink() {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        const Text(
+          'Don\'t have an account? ',
+          style: TextStyle(color: Color(0xFF525252), fontSize: 14),
+        ),
+        TextButton(
+          onPressed: _handleSignUp,
+          style: TextButton.styleFrom(
+            padding: EdgeInsets.zero,
+            tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+          ),
+          child: const Text(
+            'Sign up',
+            style: TextStyle(
+              color: Colors.black,
+              fontSize: 14,
+              fontWeight: FontWeight.w500,
+              decoration: TextDecoration.none,
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+}

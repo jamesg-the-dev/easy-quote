@@ -3,9 +3,8 @@ import 'package:easy_quote/ui/components/icon_button.dart';
 import 'package:easy_quote/ui/components/text_button.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:share_plus/share_plus.dart';
-import '../models/quote.dart';
-import '../services/quote_store.dart';
+import 'package:easy_quote/models/quote.dart';
+import 'package:easy_quote/services/quote_store.dart';
 
 class CreateQuoteScreen extends StatefulWidget {
   const CreateQuoteScreen({super.key});
@@ -106,24 +105,6 @@ class _CreateQuoteScreenState extends State<CreateQuoteScreen> {
 
   String _formatCurrency(double amount) {
     return '\$${amount.toStringAsFixed(2).replaceAllMapped(RegExp(r'(\d)(?=(\d{3})+(?!\d))'), (match) => '${match[1]},')}';
-  }
-
-  String _formatQuoteForSharing(Quote quote) {
-    final buffer = StringBuffer();
-    buffer.writeln('Quote for: ${quote.clientName}');
-    buffer.writeln('Job: ${quote.jobDescription}');
-    buffer.writeln('');
-    buffer.writeln('--- Cost Breakdown ---');
-    for (final item in quote.lineItems) {
-      buffer.writeln('${item.description}: ${_formatCurrency(item.price)}');
-    }
-    buffer.writeln('');
-    buffer.writeln('Total: ${_formatCurrency(quote.total)}');
-    buffer.writeln('');
-    buffer.writeln(
-      'Created: ${DateTime.parse(quote.createdAt).toLocal().toString().split('.')[0]}',
-    );
-    return buffer.toString();
   }
 
   void handleSendQuote() {

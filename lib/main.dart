@@ -1,9 +1,28 @@
+import 'package:easy_quote/core/app/app_wrapper.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:provider/provider.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
+import 'services/auth_store.dart';
 import 'services/quote_store.dart';
 import 'screens/home_screen.dart';
+import 'screens/login_screen.dart';
+import 'core/config/env.dart';
+import 'core/auth/auth_gate.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+
+  try {
+    await dotenv.load();
+  } catch (e) {}
+
+  await Supabase.initialize(
+    url: Env.supabaseUrl,
+    anonKey: Env.supabaseAnonKey,
+    authOptions: const FlutterAuthClientOptions(autoRefreshToken: true),
+  );
+
   runApp(const MyApp());
 }
 
@@ -12,8 +31,11 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider(
-      create: (_) => QuoteStore(),
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_) => AuthStore()),
+        ChangeNotifierProvider(create: (_) => QuoteStore()),
+      ],
       child: MaterialApp(
         title: 'Easy Quote',
         debugShowCheckedModeBanner: false,
@@ -21,7 +43,14 @@ class MyApp extends StatelessWidget {
           useMaterial3: false,
           splashFactory: NoSplash.splashFactory,
         ),
-        home: const HomeScreen(),
+
+        // 👇 WRAP HERE
+        home: AppWrapper(child: const AuthGate()),
+
+        routes: {
+          '/home': (context) => const HomeScreen(),
+          '/login': (context) => const LoginScreen(),
+        },
       ),
     );
   }
