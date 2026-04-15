@@ -205,65 +205,67 @@ class _CreateQuoteScreenState extends State<CreateQuoteScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Colors.white,
-        elevation: 0,
-        leading: AppIconButton(
-          icon: Icons.close,
-          color: const Color(0xFF111827),
-          onTap: () => Navigator.of(context).pop(),
+    return SafeArea(
+      child: Scaffold(
+        appBar: AppBar(
+          backgroundColor: Colors.white,
+          elevation: 0,
+          leading: AppIconButton(
+            icon: Icons.close,
+            color: const Color(0xFF111827),
+            onTap: () => Navigator.of(context).pop(),
+          ),
+          actions: [
+            AppButton(
+              label: mode == 'quick' ? 'Detailed mode' : 'Quick mode',
+              onTap: () {
+                setState(() {
+                  mode = mode == 'quick' ? 'detailed' : 'quick';
+                });
+              },
+              variant: ButtonVariant.link,
+            ),
+            const SizedBox(width: 24),
+          ],
         ),
-        actions: [
-          AppButton(
-            label: mode == 'quick' ? 'Detailed mode' : 'Quick mode',
-            onTap: () {
-              setState(() {
-                mode = mode == 'quick' ? 'detailed' : 'quick';
-              });
-            },
-            variant: ButtonVariant.link,
-          ),
-          const SizedBox(width: 8),
-        ],
-      ),
-      body: Stack(
-        fit: StackFit.expand,
-        children: [
-          SingleChildScrollView(
-            padding: const EdgeInsets.only(bottom: 120),
-            child: mode == 'quick' ? _buildQuickMode() : _buildDetailedMode(),
-          ),
-          // Sticky Send Button
-          Positioned(
-            bottom: 0,
-            left: 0,
-            right: 0,
-            child: Container(
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  begin: Alignment.topCenter,
-                  end: Alignment.bottomCenter,
-                  colors: [
-                    Colors.white.withValues(alpha: 0),
-                    Colors.white.withValues(alpha: 0.5),
-                    Colors.white,
-                  ],
+        body: Stack(
+          fit: StackFit.expand,
+          children: [
+            SingleChildScrollView(
+              padding: const EdgeInsets.only(bottom: 120),
+              child: mode == 'quick' ? _buildQuickMode() : _buildDetailedMode(),
+            ),
+            // Sticky Send Button
+            Positioned(
+              bottom: 0,
+              left: 0,
+              right: 0,
+              child: Container(
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment.topCenter,
+                    end: Alignment.bottomCenter,
+                    colors: [
+                      Colors.white.withValues(alpha: 0),
+                      Colors.white.withValues(alpha: 0.5),
+                      Colors.white,
+                    ],
+                  ),
                 ),
-              ),
-              padding: const EdgeInsets.all(24),
-              child: SizedBox(
-                width: double.infinity,
-                child: AppButton(
-                  label: 'Send Quote',
-                  onTap: handleSendQuote,
-                  size: ButtonSize.lg,
-                  variant: ButtonVariant.primary,
+                padding: const EdgeInsets.all(24),
+                child: SizedBox(
+                  width: double.infinity,
+                  child: AppButton(
+                    label: 'Send Quote',
+                    onTap: handleSendQuote,
+                    size: ButtonSize.lg,
+                    variant: ButtonVariant.primary,
+                  ),
                 ),
               ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
@@ -371,10 +373,12 @@ class _CreateQuoteScreenState extends State<CreateQuoteScreen> {
               ),
             ),
           ),
-          const SizedBox(height: 48),
+          const SizedBox(height: 30),
           // Add breakdown button
-          TextButton(
-            onPressed: () {
+          AppButton(
+            label: '+ Add cost breakdown',
+            variant: ButtonVariant.ghost,
+            onTap: () {
               setState(() {
                 mode = 'detailed';
                 clientNameController.text = selectedContact?['name'] ?? '';
@@ -387,14 +391,6 @@ class _CreateQuoteScreenState extends State<CreateQuoteScreen> {
                 ];
               });
             },
-            child: const Text(
-              '+ Add cost breakdown',
-              style: TextStyle(
-                fontSize: 14,
-                color: Color(0xFF6B7280),
-                fontWeight: FontWeight.w500,
-              ),
-            ),
           ),
         ],
       ),
@@ -569,15 +565,10 @@ class _CreateQuoteScreenState extends State<CreateQuoteScreen> {
                         ),
                       ),
                       if (lineItems.length > 1)
-                        IconButton(
-                          icon: const Icon(
-                            Icons.close,
-                            size: 18,
-                            color: Color(0xFF6B7280),
-                          ),
-                          onPressed: () => removeLineItem(item.id),
+                        AppIconButton(
+                          icon: Icons.close,
+                          onTap: () => removeLineItem(item.id),
                           constraints: const BoxConstraints(),
-                          padding: const EdgeInsets.symmetric(horizontal: 8),
                         ),
                     ],
                   ),
@@ -634,13 +625,11 @@ class _CreateQuoteScreenState extends State<CreateQuoteScreen> {
             );
           }),
           const SizedBox(height: 8),
-          TextButton.icon(
-            onPressed: addLineItem,
-            icon: const Icon(Icons.add, size: 16),
-            label: const Text('Add item'),
-            style: TextButton.styleFrom(
-              foregroundColor: const Color(0xFF4B5563),
-            ),
+          AppButton(
+            onTap: addLineItem,
+            leftIcon: const Icon(Icons.add),
+            label: 'Add item',
+            variant: ButtonVariant.ghost,
           ),
         ],
       ],
