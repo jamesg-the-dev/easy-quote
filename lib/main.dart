@@ -1,4 +1,5 @@
 import 'package:easy_quote/core/app/app_wrapper.dart';
+import 'package:easy_quote/screens/signup/welcome_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:provider/provider.dart';
@@ -50,6 +51,7 @@ class MyApp extends StatelessWidget {
         routes: {
           '/home': (context) => const HomeScreen(),
           '/login': (context) => const LoginScreen(),
+          '/signup': (context) => const SignupWelcomeScreen(),
         },
       ),
     );

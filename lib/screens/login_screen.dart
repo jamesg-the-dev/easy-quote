@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:flutter_svg/flutter_svg.dart';
-import '../services/auth_store.dart';
-import '../ui/components/text_button.dart';
+import 'package:easy_quote/services/auth_store.dart';
+import 'package:easy_quote/ui/components/text_button.dart';
+import 'package:easy_quote/ui/components/google_button.dart';
+import 'package:easy_quote/ui/components/apple_button.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -33,9 +34,9 @@ class _LoginScreenState extends State<LoginScreen> {
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Sign in failed: $e')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Sign in failed: $e')));
       }
     } finally {
       if (mounted) setState(() => _isLoading = false);
@@ -51,9 +52,9 @@ class _LoginScreenState extends State<LoginScreen> {
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Sign in failed: $e')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Sign in failed: $e')));
       }
     } finally {
       if (mounted) setState(() => _isLoading = false);
@@ -65,17 +66,17 @@ class _LoginScreenState extends State<LoginScreen> {
       setState(() => _isLoading = true);
       try {
         await context.read<AuthStore>().signInWithEmail(
-              _emailController.text,
-              _passwordController.text,
-            );
+          _emailController.text,
+          _passwordController.text,
+        );
         if (mounted) {
           Navigator.of(context).pushReplacementNamed('/home');
         }
       } catch (e) {
         if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Sign in failed: $e')),
-          );
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(SnackBar(content: Text('Sign in failed: $e')));
         }
       } finally {
         if (mounted) setState(() => _isLoading = false);
@@ -88,7 +89,7 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   void _handleSignUp() {
-    debugPrint('Sign up clicked');
+    Navigator.of(context).pushNamed('/signup');
   }
 
   @override
@@ -114,9 +115,15 @@ class _LoginScreenState extends State<LoginScreen> {
                       const SizedBox(height: 48),
 
                       // Social Sign In Buttons
-                      _buildGoogleButton(),
+                      GoogleButton(
+                        onTap: _handleGoogleSignIn,
+                        isLoading: _isLoading,
+                      ),
                       const SizedBox(height: 12),
-                      _buildAppleButton(),
+                      AppleButton(
+                        onTap: _handleAppleSignIn,
+                        isLoading: _isLoading,
+                      ),
                       const SizedBox(height: 32),
 
                       // Divider
@@ -177,98 +184,6 @@ class _LoginScreenState extends State<LoginScreen> {
           style: TextStyle(fontSize: 14, color: Color(0xFF525252)),
         ),
       ],
-    );
-  }
-
-  Widget _buildGoogleButton() {
-    return Container(
-      height: 56,
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: const Color(0xFFD4D4D8)),
-      ),
-      child: Material(
-        color: Colors.transparent,
-        child: InkWell(
-          onTap: _isLoading ? null : _handleGoogleSignIn,
-          borderRadius: BorderRadius.circular(12),
-          hoverColor: const Color(0xFFFAFAFA),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              if (_isLoading)
-                const SizedBox(
-                  width: 20,
-                  height: 20,
-                  child: CircularProgressIndicator(strokeWidth: 2),
-                )
-              else
-                _buildGoogleIcon(),
-              const SizedBox(width: 12),
-              const Text(
-                'Continue with Google',
-                style: TextStyle(
-                  color: Colors.black,
-                  fontSize: 14,
-                  fontWeight: FontWeight.w500,
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildGoogleIcon() {
-    return SvgPicture.asset(
-      'icons/google-icon.svg',
-      width: 20,
-      height: 20,
-    );
-  }
-
-  Widget _buildAppleButton() {
-    return Container(
-      height: 56,
-      decoration: BoxDecoration(
-        color: Colors.black,
-        borderRadius: BorderRadius.circular(12),
-      ),
-      child: Material(
-        color: Colors.transparent,
-        child: InkWell(
-          onTap: _isLoading ? null : _handleAppleSignIn,
-          borderRadius: BorderRadius.circular(12),
-          hoverColor: const Color(0xFF171717),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              if (_isLoading)
-                const SizedBox(
-                  width: 20,
-                  height: 20,
-                  child: CircularProgressIndicator(
-                    strokeWidth: 2,
-                    valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-                  ),
-                )
-              else
-                const Icon(Icons.apple, color: Colors.white, size: 20),
-              const SizedBox(width: 12),
-              const Text(
-                'Continue with Apple',
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 14,
-                  fontWeight: FontWeight.w500,
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
     );
   }
 
@@ -378,16 +293,10 @@ class _LoginScreenState extends State<LoginScreen> {
         // Forgot Password Button
         Align(
           alignment: Alignment.centerRight,
-          child: TextButton(
-            onPressed: _handleForgotPassword,
-            style: TextButton.styleFrom(
-              padding: EdgeInsets.zero,
-              tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-            ),
-            child: const Text(
-              'Forgot password?',
-              style: TextStyle(color: Color(0xFF525252), fontSize: 12),
-            ),
+          child: AppButton(
+            onTap: _handleForgotPassword,
+            label: 'Forgot password?',
+            variant: ButtonVariant.ghost,
           ),
         ),
         const SizedBox(height: 16),
@@ -414,21 +323,10 @@ class _LoginScreenState extends State<LoginScreen> {
           'Don\'t have an account? ',
           style: TextStyle(color: Color(0xFF525252), fontSize: 14),
         ),
-        TextButton(
-          onPressed: _handleSignUp,
-          style: TextButton.styleFrom(
-            padding: EdgeInsets.zero,
-            tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-          ),
-          child: const Text(
-            'Sign up',
-            style: TextStyle(
-              color: Colors.black,
-              fontSize: 14,
-              fontWeight: FontWeight.w500,
-              decoration: TextDecoration.none,
-            ),
-          ),
+        AppButton(
+          onTap: _handleSignUp,
+          label: 'Sign up',
+          variant: ButtonVariant.link,
         ),
       ],
     );
