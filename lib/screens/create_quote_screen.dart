@@ -5,6 +5,9 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:easy_quote/models/quote.dart';
 import 'package:easy_quote/services/quote_store.dart';
+import 'package:easy_quote/models/quote.dart';
+
+import '../ui/components/text_button.dart';
 
 class CreateQuoteScreen extends StatefulWidget {
   const CreateQuoteScreen({super.key});
@@ -14,28 +17,21 @@ class CreateQuoteScreen extends StatefulWidget {
 }
 
 class _CreateQuoteScreenState extends State<CreateQuoteScreen> {
-  // Mode toggle
-  String mode = 'quick'; // 'quick' or 'detailed'
-
+  bool openBreakDown = false;
   // Controllers
   late TextEditingController jobDescriptionController;
   late TextEditingController totalPriceController;
-  late TextEditingController clientContactController;
   late TextEditingController clientNameController;
 
   // Detailed quote fields
   List<LineItem> lineItems = [LineItem(id: '1', description: '', price: 0)];
   bool showDetailedBreakdown = false;
 
-  // Contact picker state
-  Map<String, String>? selectedContact;
-
   @override
   void initState() {
     super.initState();
     jobDescriptionController = TextEditingController();
     totalPriceController = TextEditingController();
-    clientContactController = TextEditingController();
     clientNameController = TextEditingController();
   }
 
@@ -43,7 +39,6 @@ class _CreateQuoteScreenState extends State<CreateQuoteScreen> {
   void dispose() {
     jobDescriptionController.dispose();
     totalPriceController.dispose();
-    clientContactController.dispose();
     clientNameController.dispose();
     super.dispose();
   }
@@ -93,16 +88,6 @@ class _CreateQuoteScreenState extends State<CreateQuoteScreen> {
   double get detailedTotal =>
       lineItems.fold(0.0, (sum, item) => sum + item.price);
 
-  void handleSelectContact(Map<String, String> contact) {
-    setState(() {
-      selectedContact = contact;
-      if (mode == 'detailed') {
-        clientNameController.text = contact['name'] ?? '';
-      }
-      clientContactController.text = contact['phone'] ?? '';
-    });
-  }
-
   String _formatCurrency(double amount) {
     return '\$${amount.toStringAsFixed(2).replaceAllMapped(RegExp(r'(\d)(?=(\d{3})+(?!\d))'), (match) => '${match[1]},')}';
   }
@@ -110,80 +95,55 @@ class _CreateQuoteScreenState extends State<CreateQuoteScreen> {
   void handleSendQuote() {
     final store = Provider.of<QuoteStore>(context, listen: false);
 
-    if (mode == 'quick') {
-      // Quick quote validation
-      if (jobDescriptionController.text.trim().isEmpty) {
-        _showAlert('Please describe the job');
-        return;
-      }
-      final price = double.tryParse(totalPriceController.text);
-      if (price == null || price <= 0) {
-        _showAlert('Please enter a valid price');
-        return;
-      }
+    // Quick quote validation
+    if (jobDescriptionController.text.trim().isEmpty) {
+      _showAlert('Please describe the job');
+      return;
+    }
+    final price = double.tryParse(totalPriceController.text);
+    if (price == null || price <= 0) {
+      _showAlert('Please enter a valid price');
+      return;
+    }
 
-      final newQuote = Quote(
-        id: DateTime.now().millisecondsSinceEpoch.toString(),
-        clientName:
-            selectedContact?['name'] ??
-            (clientContactController.text.contains('@')
-                ? 'Client'
-                : clientContactController.text),
-        jobDescription: jobDescriptionController.text.trim(),
-        lineItems: [
-          LineItem(
-            id: '1',
-            description: jobDescriptionController.text.trim(),
-            price: price,
-          ),
-        ],
-        total: price,
-        status: 'Draft',
-        createdAt: DateTime.now().toIso8601String(),
-      );
+    // Detailed quote validation
+    if (clientNameController.text.trim().isEmpty ||
+        jobDescriptionController.text.trim().isEmpty) {
+      _showAlert('Please fill in client name and job description');
+      return;
+    }
 
-      store.addQuote(newQuote);
-      if (mounted) {
-        Navigator.of(context).push(
-          MaterialPageRoute(
-            builder: (context) => SendQuoteScreen(quoteId: newQuote.id),
-          ),
-        );
-      }
-    } else {
-      // Detailed quote validation
-      if (clientNameController.text.trim().isEmpty ||
-          jobDescriptionController.text.trim().isEmpty) {
-        _showAlert('Please fill in client name and job description');
-        return;
-      }
+    List<LineItem> lineItems = [
+      LineItem(
+        id: '1',
+        description: jobDescriptionController.text.trim(),
+        price: price,
+      ),
+    ];
 
-      final validLineItems = lineItems
+    if (!lineItems.isEmpty()) {
+      lineItems = lineItems
           .where((item) => item.description.trim().isNotEmpty && item.price > 0)
           .toList();
-      if (validLineItems.isEmpty) {
-        _showAlert('Please add at least one line item');
-        return;
-      }
+    }
 
-      final newQuote = Quote(
-        id: DateTime.now().millisecondsSinceEpoch.toString(),
-        clientName: clientNameController.text.trim(),
-        jobDescription: jobDescriptionController.text.trim(),
-        lineItems: validLineItems,
-        total: detailedTotal,
-        status: 'Draft',
-        createdAt: DateTime.now().toIso8601String(),
+    final newQuote = Quote(
+      id: DateTime.now().millisecondsSinceEpoch.toString(),
+      clientName: clientNameController.text.trim(),
+      jobDescription: jobDescriptionController.text.trim(),
+      lineItems: lineItems,
+      total: price,
+      status: 'Draft',
+      createdAt: DateTime.now().toIso8601String(),
+    );
+
+    store.addQuote(newQuote);
+    if (mounted) {
+      Navigator.of(context).push(
+        MaterialPageRoute(
+          builder: (context) => SendQuoteScreen(quoteId: newQuote.id),
+        ),
       );
-
-      store.addQuote(newQuote);
-      if (mounted) {
-        Navigator.of(context).push(
-          MaterialPageRoute(
-            builder: (context) => SendQuoteScreen(quoteId: newQuote.id),
-          ),
-        );
-      }
     }
   }
 
@@ -214,25 +174,13 @@ class _CreateQuoteScreenState extends State<CreateQuoteScreen> {
           color: const Color(0xFF111827),
           onTap: () => Navigator.of(context).pop(),
         ),
-        actions: [
-          AppButton(
-            label: mode == 'quick' ? 'Detailed mode' : 'Quick mode',
-            onTap: () {
-              setState(() {
-                mode = mode == 'quick' ? 'detailed' : 'quick';
-              });
-            },
-            variant: ButtonVariant.link,
-          ),
-          const SizedBox(width: 8),
-        ],
       ),
       body: Stack(
         fit: StackFit.expand,
         children: [
           SingleChildScrollView(
             padding: const EdgeInsets.only(bottom: 120),
-            child: mode == 'quick' ? _buildQuickMode() : _buildDetailedMode(),
+            child: _buildQuoteForm(),
           ),
           // Sticky Send Button
           Positioned(
@@ -268,13 +216,12 @@ class _CreateQuoteScreenState extends State<CreateQuoteScreen> {
     );
   }
 
-  Widget _buildQuickMode() {
+  Widget _buildQuoteForm() {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 32),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Step 1: Job
           _buildStep(
             title: "What's the job?",
             child: TextField(
@@ -301,59 +248,12 @@ class _CreateQuoteScreenState extends State<CreateQuoteScreen> {
           ),
           const SizedBox(height: 48),
           _buildStep(
-            title: 'How much?',
-            child: Row(
-              children: [
-                const Text(
-                  '\$',
-                  style: TextStyle(
-                    fontSize: 48,
-                    fontWeight: FontWeight.w600,
-                    color: Color(0xFF111827),
-                  ),
-                ),
-                const SizedBox(width: 8),
-                Expanded(
-                  child: TextField(
-                    controller: totalPriceController,
-                    keyboardType: const TextInputType.numberWithOptions(
-                      decimal: true,
-                    ),
-                    decoration: InputDecoration(
-                      hintText: '0',
-                      hintStyle: const TextStyle(color: Color(0xFFD1D5DB)),
-                      border: InputBorder.none,
-                      enabledBorder: const UnderlineInputBorder(
-                        borderSide: BorderSide(
-                          color: Color(0xFFE5E7EB),
-                          width: 2,
-                        ),
-                      ),
-                      focusedBorder: const UnderlineInputBorder(
-                        borderSide: BorderSide(
-                          color: Color(0xFF111827),
-                          width: 2,
-                        ),
-                      ),
-                    ),
-                    style: const TextStyle(
-                      fontSize: 48,
-                      fontWeight: FontWeight.w600,
-                      color: Color(0xFF111827),
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
-          const SizedBox(height: 48),
-          _buildStep(
             title: 'Who\'s it for?',
             child: TextField(
               controller: clientContactController,
               autofocus: true,
               decoration: InputDecoration(
-                hintText: 'Enter phone/email',
+                hintText: 'Enter client name',
                 hintStyle: const TextStyle(color: Color(0xFFD1D5DB)),
                 border: InputBorder.none,
                 enabledBorder: const UnderlineInputBorder(
@@ -371,86 +271,7 @@ class _CreateQuoteScreenState extends State<CreateQuoteScreen> {
               ),
             ),
           ),
-          const SizedBox(height: 48),
-          // Add breakdown button
-          TextButton(
-            onPressed: () {
-              setState(() {
-                mode = 'detailed';
-                clientNameController.text = selectedContact?['name'] ?? '';
-                lineItems = [
-                  LineItem(
-                    id: '1',
-                    description: jobDescriptionController.text,
-                    price: double.tryParse(totalPriceController.text) ?? 0,
-                  ),
-                ];
-              });
-            },
-            child: const Text(
-              '+ Add cost breakdown',
-              style: TextStyle(
-                fontSize: 14,
-                color: Color(0xFF6B7280),
-                fontWeight: FontWeight.w500,
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildDetailedMode() {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 24),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // Client Info
-          TextField(
-            controller: clientNameController,
-            decoration: InputDecoration(
-              hintText: 'Client name',
-              hintStyle: const TextStyle(color: Color(0xFFD1D5DB)),
-              border: InputBorder.none,
-              enabledBorder: const UnderlineInputBorder(
-                borderSide: BorderSide(color: Color(0xFFE5E7EB), width: 2),
-              ),
-              focusedBorder: const UnderlineInputBorder(
-                borderSide: BorderSide(color: Color(0xFF111827), width: 2),
-              ),
-              contentPadding: const EdgeInsets.only(bottom: 12),
-            ),
-            style: const TextStyle(
-              fontSize: 20,
-              fontWeight: FontWeight.w500,
-              color: Color(0xFF111827),
-            ),
-          ),
-          const SizedBox(height: 20),
-          TextField(
-            controller: jobDescriptionController,
-            decoration: InputDecoration(
-              hintText: 'Job description',
-              hintStyle: const TextStyle(color: Color(0xFFD1D5DB)),
-              border: InputBorder.none,
-              enabledBorder: const UnderlineInputBorder(
-                borderSide: BorderSide(color: Color(0xFFE5E7EB), width: 2),
-              ),
-              focusedBorder: const UnderlineInputBorder(
-                borderSide: BorderSide(color: Color(0xFF111827), width: 2),
-              ),
-              contentPadding: const EdgeInsets.only(bottom: 12),
-            ),
-            style: const TextStyle(
-              fontSize: 20,
-              fontWeight: FontWeight.w500,
-              color: Color(0xFF111827),
-            ),
-          ),
           const SizedBox(height: 32),
-          // Line Items Section
           _buildLineItemsSection(),
           const SizedBox(height: 32),
           // Total
@@ -527,8 +348,7 @@ class _CreateQuoteScreenState extends State<CreateQuoteScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        _buildCustomAccordion(),
-        if (showDetailedBreakdown) ...[
+        ...[
           const SizedBox(height: 16),
           ...lineItems.asMap().entries.map((entry) {
             final item = entry.value;
@@ -634,13 +454,11 @@ class _CreateQuoteScreenState extends State<CreateQuoteScreen> {
             );
           }),
           const SizedBox(height: 8),
-          TextButton.icon(
-            onPressed: addLineItem,
-            icon: const Icon(Icons.add, size: 16),
-            label: const Text('Add item'),
-            style: TextButton.styleFrom(
-              foregroundColor: const Color(0xFF4B5563),
-            ),
+          AppButton(
+            onTap: addLineItem,
+            leftIcon: const Icon(Icons.add, size: 18),
+            label: 'Add item',
+            variant: ButtonVariant.ghost,
           ),
         ],
       ],

@@ -1,26 +1,23 @@
 import 'package:flutter/material.dart';
 
 class AppColors extends ThemeExtension<AppColors> {
-  // Backgrounds
+  // 🌐 Base surfaces
   final Color background;
   final Color surface;
   final Color surfaceMuted;
 
-  // Text
+  // 📝 Text
   final Color textPrimary;
   final Color textSecondary;
   final Color textMuted;
 
-  // Borders
+  // 📏 Borders
   final Color border;
   final Color borderStrong;
 
-  // Text Buttons (legacy)
-  final Color primaryTextButton;
-  final Color secondaryTextButton;
-  final Color dangerTextButton;
-  final Color ghostTextButton;
-  final Color linkTextButton;
+  // 🚨 Semantic
+  final Color primary;
+  final Color danger;
 
   const AppColors({
     required this.background,
@@ -31,11 +28,8 @@ class AppColors extends ThemeExtension<AppColors> {
     required this.textMuted,
     required this.border,
     required this.borderStrong,
-    required this.primaryTextButton,
-    required this.secondaryTextButton,
-    required this.dangerTextButton,
-    required this.ghostTextButton,
-    required this.linkTextButton,
+    required this.primary,
+    required this.danger,
   });
 
   @override
@@ -48,11 +42,8 @@ class AppColors extends ThemeExtension<AppColors> {
     Color? textMuted,
     Color? border,
     Color? borderStrong,
-    Color? primaryTextButton,
-    Color? secondaryTextButton,
-    Color? dangerTextButton,
-    Color? ghostTextButton,
-    Color? linkTextButton,
+    Color? primary,
+    Color? danger,
   }) {
     return AppColors(
       background: background ?? this.background,
@@ -63,11 +54,8 @@ class AppColors extends ThemeExtension<AppColors> {
       textMuted: textMuted ?? this.textMuted,
       border: border ?? this.border,
       borderStrong: borderStrong ?? this.borderStrong,
-      primaryTextButton: primaryTextButton ?? this.primaryTextButton,
-      secondaryTextButton: secondaryTextButton ?? this.secondaryTextButton,
-      dangerTextButton: dangerTextButton ?? this.dangerTextButton,
-      ghostTextButton: ghostTextButton ?? this.ghostTextButton,
-      linkTextButton: linkTextButton ?? this.linkTextButton,
+      primary: primary ?? this.primary,
+      danger: danger ?? this.danger,
     );
   }
 
@@ -84,23 +72,8 @@ class AppColors extends ThemeExtension<AppColors> {
       textMuted: Color.lerp(textMuted, other.textMuted, t)!,
       border: Color.lerp(border, other.border, t)!,
       borderStrong: Color.lerp(borderStrong, other.borderStrong, t)!,
-      primaryTextButton: Color.lerp(
-        primaryTextButton,
-        other.primaryTextButton,
-        t,
-      )!,
-      secondaryTextButton: Color.lerp(
-        secondaryTextButton,
-        other.secondaryTextButton,
-        t,
-      )!,
-      dangerTextButton: Color.lerp(
-        dangerTextButton,
-        other.dangerTextButton,
-        t,
-      )!,
-      ghostTextButton: Color.lerp(ghostTextButton, other.ghostTextButton, t)!,
-      linkTextButton: Color.lerp(linkTextButton, other.linkTextButton, t)!,
+      primary: Color.lerp(primary, other.primary, t)!,
+      danger: Color.lerp(danger, other.danger, t)!,
     );
   }
 }
