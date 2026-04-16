@@ -1,5 +1,5 @@
+import 'package:easy_quote/screens/home_screen.dart';
 import 'package:flutter/material.dart';
-import 'package:easy_quote/ui/components/logo.dart';
 import 'package:easy_quote/ui/components/text_button.dart';
 import 'package:provider/provider.dart';
 import 'package:easy_quote/services/signup_store.dart';
@@ -9,12 +9,9 @@ class SignupSuccessScreen extends StatelessWidget {
 
   void _handleCreateQuote(BuildContext context) {
     context.read<SignupStore>().clearSignupData();
-    Navigator.of(context).pushReplacementNamed('/home');
-  }
-
-  void _handleImportLater(BuildContext context) {
-    context.read<SignupStore>().clearSignupData();
-    Navigator.of(context).pushReplacementNamed('/home');
+    Navigator.of(
+      context,
+    ).push(MaterialPageRoute(builder: (context) => const HomeScreen()));
   }
 
   @override
@@ -33,11 +30,17 @@ class SignupSuccessScreen extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
                     // Success Icon
-                    Center(
-                      child: Icon(
+                    Container(
+                      width: 80,
+                      height: 80,
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        color: const Color(0xFFDCFCE7),
+                      ),
+                      child: const Icon(
                         Icons.check_circle,
-                        size: 70,
-                        color: Colors.green.shade600,
+                        size: 40,
+                        color: Color(0xFF16A34A),
                       ),
                     ),
                     const SizedBox(height: 24),

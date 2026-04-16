@@ -6,6 +6,7 @@ class AppIconButton extends StatelessWidget {
   final VoidCallback onTap;
   final double size;
   final Color? color;
+  final BoxConstraints? constraints;
 
   const AppIconButton({
     super.key,
@@ -13,6 +14,7 @@ class AppIconButton extends StatelessWidget {
     required this.onTap,
     this.size = 20,
     this.color,
+    this.constraints,
   });
 
   @override

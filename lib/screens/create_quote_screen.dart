@@ -5,9 +5,6 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:easy_quote/models/quote.dart';
 import 'package:easy_quote/services/quote_store.dart';
-import 'package:easy_quote/models/quote.dart';
-
-import '../ui/components/text_button.dart';
 
 class CreateQuoteScreen extends StatefulWidget {
   const CreateQuoteScreen({super.key});
@@ -121,7 +118,7 @@ class _CreateQuoteScreenState extends State<CreateQuoteScreen> {
       ),
     ];
 
-    if (!lineItems.isEmpty()) {
+    if (lineItems.isNotEmpty) {
       lineItems = lineItems
           .where((item) => item.description.trim().isNotEmpty && item.price > 0)
           .toList();
@@ -165,53 +162,55 @@ class _CreateQuoteScreenState extends State<CreateQuoteScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Colors.white,
-        elevation: 0,
-        leading: AppIconButton(
-          icon: Icons.close,
-          color: const Color(0xFF111827),
-          onTap: () => Navigator.of(context).pop(),
-        ),
-      ),
-      body: Stack(
-        fit: StackFit.expand,
-        children: [
-          SingleChildScrollView(
-            padding: const EdgeInsets.only(bottom: 120),
-            child: _buildQuoteForm(),
+    return SafeArea(
+      child: Scaffold(
+        appBar: AppBar(
+          backgroundColor: Colors.white,
+          elevation: 0,
+          leading: AppIconButton(
+            icon: Icons.close,
+            color: const Color(0xFF111827),
+            onTap: () => Navigator.of(context).pop(),
           ),
-          // Sticky Send Button
-          Positioned(
-            bottom: 0,
-            left: 0,
-            right: 0,
-            child: Container(
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  begin: Alignment.topCenter,
-                  end: Alignment.bottomCenter,
-                  colors: [
-                    Colors.white.withValues(alpha: 0),
-                    Colors.white.withValues(alpha: 0.5),
-                    Colors.white,
-                  ],
+        ),
+        body: Stack(
+          fit: StackFit.expand,
+          children: [
+            SingleChildScrollView(
+              padding: const EdgeInsets.only(bottom: 120),
+              child: _buildQuoteForm(),
+            ),
+            // Sticky Send Button
+            Positioned(
+              bottom: 0,
+              left: 0,
+              right: 0,
+              child: Container(
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment.topCenter,
+                    end: Alignment.bottomCenter,
+                    colors: [
+                      Colors.white.withValues(alpha: 0),
+                      Colors.white.withValues(alpha: 0.5),
+                      Colors.white,
+                    ],
+                  ),
                 ),
-              ),
-              padding: const EdgeInsets.all(24),
-              child: SizedBox(
-                width: double.infinity,
-                child: AppButton(
-                  label: 'Send Quote',
-                  onTap: handleSendQuote,
-                  size: ButtonSize.lg,
-                  variant: ButtonVariant.primary,
+                padding: const EdgeInsets.all(24),
+                child: SizedBox(
+                  width: double.infinity,
+                  child: AppButton(
+                    label: 'Send Quote',
+                    onTap: handleSendQuote,
+                    size: ButtonSize.lg,
+                    variant: ButtonVariant.primary,
+                  ),
                 ),
               ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
@@ -250,7 +249,7 @@ class _CreateQuoteScreenState extends State<CreateQuoteScreen> {
           _buildStep(
             title: 'Who\'s it for?',
             child: TextField(
-              controller: clientContactController,
+              controller: clientNameController,
               autofocus: true,
               decoration: InputDecoration(
                 hintText: 'Enter client name',
@@ -316,34 +315,6 @@ class _CreateQuoteScreenState extends State<CreateQuoteScreen> {
     );
   }
 
-  Widget _buildCustomAccordion() {
-    return GestureDetector(
-      onTap: () =>
-          setState(() => showDetailedBreakdown = !showDetailedBreakdown),
-      child: Container(
-        padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 0),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            const Text(
-              'Cost Breakdown',
-              style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.w500,
-                color: Color(0xFF374151),
-              ),
-            ),
-            AnimatedRotation(
-              turns: showDetailedBreakdown ? 0.5 : 0,
-              duration: const Duration(milliseconds: 200),
-              child: const Icon(Icons.expand_more, color: Color(0xFF374151)),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
   Widget _buildLineItemsSection() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -357,6 +328,13 @@ class _CreateQuoteScreenState extends State<CreateQuoteScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
+                  Text(
+                    'Items',
+                    style: const TextStyle(
+                      fontSize: 18,
+                      color: Color(0xFF6B7280),
+                    ),
+                  ),
                   Row(
                     children: [
                       Expanded(
@@ -389,15 +367,10 @@ class _CreateQuoteScreenState extends State<CreateQuoteScreen> {
                         ),
                       ),
                       if (lineItems.length > 1)
-                        IconButton(
-                          icon: const Icon(
-                            Icons.close,
-                            size: 18,
-                            color: Color(0xFF6B7280),
-                          ),
-                          onPressed: () => removeLineItem(item.id),
+                        AppIconButton(
+                          icon: Icons.close,
+                          onTap: () => removeLineItem(item.id),
                           constraints: const BoxConstraints(),
-                          padding: const EdgeInsets.symmetric(horizontal: 8),
                         ),
                     ],
                   ),
@@ -456,7 +429,7 @@ class _CreateQuoteScreenState extends State<CreateQuoteScreen> {
           const SizedBox(height: 8),
           AppButton(
             onTap: addLineItem,
-            leftIcon: const Icon(Icons.add, size: 18),
+            leftIcon: const Icon(Icons.add),
             label: 'Add item',
             variant: ButtonVariant.ghost,
           ),
