@@ -1,7 +1,7 @@
 import 'package:easy_quote/ui/components/text_button.dart';
 import 'package:flutter/material.dart';
-import '../../ui/components/google_button.dart';
-import '../../ui/components/apple_button.dart';
+import 'package:easy_quote/ui/components/google_button.dart';
+import 'package:easy_quote/ui/components/apple_button.dart';
 
 class SignupWelcomeScreen extends StatefulWidget {
   const SignupWelcomeScreen({super.key});

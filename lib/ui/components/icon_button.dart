@@ -1,5 +1,5 @@
 import 'package:flutter/widgets.dart';
-import '../primitives/pressable.dart';
+import 'package:easy_quote/ui/primitives/pressable.dart';
 
 class AppIconButton extends StatelessWidget {
   final IconData icon;

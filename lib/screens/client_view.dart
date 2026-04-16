@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../models/quote.dart';
-import '../services/quote_store.dart';
+import 'package:easy_quote/models/quote.dart';
+import 'package:easy_quote/services/quote_store.dart';
 
 class ClientView extends StatefulWidget {
   final String quoteId;

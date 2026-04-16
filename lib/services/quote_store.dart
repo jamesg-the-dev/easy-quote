@@ -1,5 +1,5 @@
 import 'package:flutter/foundation.dart';
-import '../models/quote.dart';
+import 'package:easy_quote/models/quote.dart';
 
 class QuoteStore extends ChangeNotifier {
   final Map<String, Quote> _quotes = {};
