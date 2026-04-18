@@ -15,6 +15,10 @@ class AppColors extends ThemeExtension<AppColors> {
   final Color border;
   final Color borderStrong;
 
+  final Color inputHint;
+  final Color inputBorder;
+  final Color inputFocusedBorder;
+
   // 🚨 Semantic
   final Color primary;
   final Color danger;
@@ -30,6 +34,9 @@ class AppColors extends ThemeExtension<AppColors> {
     required this.borderStrong,
     required this.primary,
     required this.danger,
+    required this.inputHint,
+    required this.inputBorder,
+    required this.inputFocusedBorder,
   });
 
   @override
@@ -44,6 +51,9 @@ class AppColors extends ThemeExtension<AppColors> {
     Color? borderStrong,
     Color? primary,
     Color? danger,
+    Color? inputHint,
+    Color? inputBorder,
+    Color? inputFocusedBorder,
   }) {
     return AppColors(
       background: background ?? this.background,
@@ -56,6 +66,9 @@ class AppColors extends ThemeExtension<AppColors> {
       borderStrong: borderStrong ?? this.borderStrong,
       primary: primary ?? this.primary,
       danger: danger ?? this.danger,
+      inputBorder: inputBorder ?? this.inputBorder,
+      inputFocusedBorder: inputFocusedBorder ?? this.inputFocusedBorder,
+      inputHint: inputHint ?? this.inputHint,
     );
   }
 
@@ -74,6 +87,13 @@ class AppColors extends ThemeExtension<AppColors> {
       borderStrong: Color.lerp(borderStrong, other.borderStrong, t)!,
       primary: Color.lerp(primary, other.primary, t)!,
       danger: Color.lerp(danger, other.danger, t)!,
+      inputBorder: Color.lerp(inputBorder, other.inputBorder, t)!,
+      inputFocusedBorder: Color.lerp(
+        inputFocusedBorder,
+        other.inputFocusedBorder,
+        t,
+      )!,
+      inputHint: Color.lerp(inputHint, other.inputHint, t)!,
     );
   }
 }

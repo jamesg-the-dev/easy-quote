@@ -1,6 +1,8 @@
 import 'package:easy_quote/screens/send_quote_screen.dart';
 import 'package:easy_quote/ui/components/icon_button.dart';
 import 'package:easy_quote/ui/components/text_button.dart';
+import 'package:easy_quote/ui/theme/app_colors.dart';
+import 'package:easy_quote/ui/theme/theme_extensions.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:easy_quote/models/quote.dart';
@@ -180,7 +182,7 @@ class _CreateQuoteScreenState extends State<CreateQuoteScreen> {
               padding: const EdgeInsets.only(bottom: 120),
               child: _buildQuoteForm(),
             ),
-            // Sticky Send Button
+            // Sticky Send Button with Total
             Positioned(
               bottom: 0,
               left: 0,
@@ -201,7 +203,7 @@ class _CreateQuoteScreenState extends State<CreateQuoteScreen> {
                 child: SizedBox(
                   width: double.infinity,
                   child: AppButton(
-                    label: 'Send Quote',
+                    label: 'Share Quote ${_formatCurrency(detailedTotal)}',
                     onTap: handleSendQuote,
                     size: ButtonSize.lg,
                     variant: ButtonVariant.primary,
@@ -217,7 +219,7 @@ class _CreateQuoteScreenState extends State<CreateQuoteScreen> {
 
   Widget _buildQuoteForm() {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 32),
+      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 10),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -253,7 +255,7 @@ class _CreateQuoteScreenState extends State<CreateQuoteScreen> {
               autofocus: true,
               decoration: InputDecoration(
                 hintText: 'Enter client name',
-                hintStyle: const TextStyle(color: Color(0xFFD1D5DB)),
+                hintStyle: TextStyle(color: context.colors.inputHint),
                 border: InputBorder.none,
                 enabledBorder: const UnderlineInputBorder(
                   borderSide: BorderSide(color: Color(0xFFE5E7EB), width: 2),
@@ -273,29 +275,6 @@ class _CreateQuoteScreenState extends State<CreateQuoteScreen> {
           const SizedBox(height: 32),
           _buildLineItemsSection(),
           const SizedBox(height: 32),
-          // Total
-          Padding(
-            padding: const EdgeInsets.only(top: 16),
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.baseline,
-              textBaseline: TextBaseline.alphabetic,
-              children: [
-                const Text(
-                  'Total',
-                  style: TextStyle(fontSize: 18, color: Color(0xFF6B7280)),
-                ),
-                const SizedBox(width: 8),
-                Text(
-                  _formatCurrency(detailedTotal),
-                  style: const TextStyle(
-                    fontSize: 40,
-                    fontWeight: FontWeight.w600,
-                    color: Color(0xFF111827),
-                  ),
-                ),
-              ],
-            ),
-          ),
         ],
       ),
     );
@@ -319,121 +298,113 @@ class _CreateQuoteScreenState extends State<CreateQuoteScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        ...[
-          const SizedBox(height: 16),
-          ...lineItems.asMap().entries.map((entry) {
+        // Header with title and Add button
+        Padding(
+          padding: const EdgeInsets.only(bottom: 12),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              const Text(
+                'Cost breakdown',
+                style: TextStyle(fontSize: 18, color: Color(0xFF6B7280)),
+              ),
+              AppButton(
+                onTap: addLineItem,
+                leftIcon: const Icon(Icons.add),
+                label: 'Add item',
+                variant: ButtonVariant.ghost,
+                size: ButtonSize.sm,
+              ),
+            ],
+          ),
+        ),
+        // Line items list
+        Column(
+          children: lineItems.asMap().entries.map((entry) {
             final item = entry.value;
             return Padding(
-              padding: const EdgeInsets.only(bottom: 16),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'Items',
-                    style: const TextStyle(
-                      fontSize: 18,
-                      color: Color(0xFF6B7280),
-                    ),
-                  ),
-                  Row(
-                    children: [
-                      Expanded(
-                        child: TextField(
-                          onChanged: (value) =>
-                              updateLineItem(item.id, 'description', value),
-                          decoration: InputDecoration(
-                            hintText: 'Item description',
-                            hintStyle: const TextStyle(
-                              color: Color(0xFFD1D5DB),
+              padding: const EdgeInsets.only(bottom: 12),
+              child: Container(
+                decoration: BoxDecoration(
+                  color: const Color(0xFFF5F6F7),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                padding: const EdgeInsets.all(16),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // Description input with delete button
+                    Row(
+                      children: [
+                        Expanded(
+                          child: TextField(
+                            onChanged: (value) =>
+                                updateLineItem(item.id, 'description', value),
+                            decoration: const InputDecoration(
+                              hintText: 'Labor, materials, etc.',
+                              border: InputBorder.none,
+                              contentPadding: EdgeInsets.zero,
                             ),
-                            border: InputBorder.none,
-                            enabledBorder: const UnderlineInputBorder(
-                              borderSide: BorderSide(
-                                color: Color(0xFFE5E7EB),
-                                width: 1,
-                              ),
-                            ),
-                            focusedBorder: const UnderlineInputBorder(
-                              borderSide: BorderSide(
-                                color: Color(0xFF111827),
-                                width: 1,
-                              ),
+                            style: const TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.w500,
+                              color: Color(0xFF111827),
                             ),
                           ),
-                          style: const TextStyle(
-                            fontSize: 16,
+                        ),
+                        if (lineItems.length > 1)
+                          AppIconButton(
+                            icon: Icons.delete_outline,
+                            color: context.colors.danger,
+                            onTap: () => removeLineItem(item.id),
+                            constraints: const BoxConstraints(),
+                          ),
+                      ],
+                    ),
+                    const SizedBox(height: 12),
+                    // Price input
+                    Row(
+                      children: [
+                        const Text(
+                          '\$',
+                          style: TextStyle(
+                            fontSize: 24,
+                            fontWeight: FontWeight.w600,
                             color: Color(0xFF111827),
                           ),
                         ),
-                      ),
-                      if (lineItems.length > 1)
-                        AppIconButton(
-                          icon: Icons.close,
-                          onTap: () => removeLineItem(item.id),
-                          constraints: const BoxConstraints(),
-                        ),
-                    ],
-                  ),
-                  const SizedBox(height: 8),
-                  Row(
-                    children: [
-                      const Text(
-                        '\$',
-                        style: TextStyle(
-                          color: Color(0xFF6B7280),
-                          fontSize: 16,
-                        ),
-                      ),
-                      const SizedBox(width: 4),
-                      Expanded(
-                        child: TextField(
-                          onChanged: (value) => updateLineItem(
-                            item.id,
-                            'price',
-                            double.tryParse(value) ?? 0,
-                          ),
-                          keyboardType: const TextInputType.numberWithOptions(
-                            decimal: true,
-                          ),
-                          decoration: InputDecoration(
-                            hintText: '0.00',
-                            hintStyle: const TextStyle(
-                              color: Color(0xFFD1D5DB),
+                        const SizedBox(width: 4),
+                        Expanded(
+                          child: TextField(
+                            onChanged: (value) => updateLineItem(
+                              item.id,
+                              'price',
+                              double.tryParse(value) ?? 0,
                             ),
-                            border: InputBorder.none,
-                            enabledBorder: const UnderlineInputBorder(
-                              borderSide: BorderSide(
-                                color: Color(0xFFE5E7EB),
-                                width: 1,
-                              ),
+                            keyboardType: const TextInputType.numberWithOptions(
+                              decimal: true,
                             ),
-                            focusedBorder: const UnderlineInputBorder(
-                              borderSide: BorderSide(
-                                color: Color(0xFF111827),
-                                width: 1,
-                              ),
+                            decoration: const InputDecoration(
+                              hintText: '0',
+                              hintStyle: TextStyle(color: Color(0xFFA3A3A3)),
+                              border: InputBorder.none,
+                              contentPadding: EdgeInsets.zero,
+                            ),
+                            style: const TextStyle(
+                              fontSize: 24,
+                              fontWeight: FontWeight.w600,
+                              color: Color(0xFF111827),
                             ),
                           ),
-                          style: const TextStyle(
-                            fontSize: 16,
-                            color: Color.fromRGBO(17, 24, 39, 1),
-                          ),
                         ),
-                      ),
-                    ],
-                  ),
-                ],
+                      ],
+                    ),
+                  ],
+                ),
               ),
             );
-          }),
-          const SizedBox(height: 8),
-          AppButton(
-            onTap: addLineItem,
-            leftIcon: const Icon(Icons.add),
-            label: 'Add item',
-            variant: ButtonVariant.ghost,
-          ),
-        ],
+          }).toList(),
+        ),
       ],
     );
   }

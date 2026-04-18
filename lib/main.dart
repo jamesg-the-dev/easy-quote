@@ -12,6 +12,7 @@ import 'services/quote_store.dart';
 import 'services/signup_store.dart';
 import 'core/config/env.dart';
 import 'core/auth/auth_gate.dart';
+import 'ui/theme/app_theme.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -43,10 +44,7 @@ class MyApp extends StatelessWidget {
       child: MaterialApp(
         title: 'Easy Quote',
         debugShowCheckedModeBanner: false,
-        theme: ThemeData(
-          useMaterial3: false,
-          splashFactory: NoSplash.splashFactory,
-        ),
+        theme: AppTheme.light(),
         home: const AuthGate(),
         routes: {
           '/signup': (context) => const SignupWelcomeScreen(),
